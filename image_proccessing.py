@@ -3,12 +3,29 @@ import glob
 import time
 from datetime import datetime
 import os
+import numpy as np
 
 img_path = 'images/'
 video_path = 'videos/'
 file_name = datetime.now().strftime("%Y%m%d-%H%M%S")
 camera_port = 0
 ramp_frames = 30
+
+
+
+def calculate_angle(a,b,c):
+    a = np.array(a) # First
+    b = np.array(b) # Mid
+    c = np.array(c) # End
+    
+    radians = np.arctan2(c[1]-b[1], c[0]-b[0]) - np.arctan2(a[1]-b[1], a[0]-b[0])
+    angle = np.abs(radians*180.0/np.pi)
+    
+    if angle >180.0:
+        angle = 360-angle
+        
+    return angle 
+
 
 
 def _get_image(camera):
