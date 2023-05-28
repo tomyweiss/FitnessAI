@@ -7,13 +7,14 @@ import pandas as pd
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 from datetime import datetime
-import pandas as pd
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-from pmdarima import auto_arima
-from statsmodels.tsa.seasonal import seasonal_decompose
+#from pmdarima import auto_arima
+#from statsmodels.tsa.seasonal import seasonal_decompose
 from datetime import timedelta
 import time
-import os
+#import os
+import matplotlib.pyplot as plt
+
 
 
 #Name The Exercise
@@ -27,11 +28,10 @@ data = {"dates" : [],
 samples = 0
 time.sleep(5)
 
-for root, dirs, files in os.walk('./Squat Downs/'):
-    for file in files:
-        # Delete each file
-        file_path = os.path.join(root, file)
-        os.remove(file_path)
+#truncates the 'Squat Downs' folder
+relative_path = r'C:\Users\mosac\Git Repositories\FitnessAI\FitnessAI\Cycle Speed Decay Forecasting\Flexing OR Stretching'
+u.delete_folder(relative_path)
+
 
 cap = cv2.VideoCapture(0)
 with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
@@ -51,8 +51,6 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
         #Extract landmarks
         if results.pose_landmarks:
             landmarks = results.pose_landmarks.landmark
-            print(landmarks)
-
 
 
             mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
@@ -130,7 +128,7 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                 data["spike/deep"].append(-1)
                 data["values"].append(1-avg_y)
                 data["dates"].append(datetime.today().strftime("%H:%M:%S:%f"))
-                path = './Squat Downs/frame' + str(samples) + '.jpg'
+                path = relative_path + '/frame' + str(samples) + '.jpg'
                 samples+=1
                 cv2.imwrite(path, frame)
                 #cv2.imwrite(path, image)
@@ -142,7 +140,7 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
             
             cv2.imshow('Mediapipe Feed', image)
             
-            if ((cv2.waitKey(10) & 0xFF == ord('q')) | (iter == 200)):
+            if ((cv2.waitKey(10) & 0xFF == ord('q')) | (iter == 100)):
                 break
 
     cap.release()
@@ -168,24 +166,23 @@ for i in range(100):
     data["values"].append(0)
     data["spike/deep"].append(0)
 
-
 df = pd.DataFrame(data = data)
-
 #Use of sarima with CF *FORECAST*
 ############## WITH SPIKES / DEEPS ##################
-train_df = df.iloc[:len(df)-100]
-test_df = df.iloc[len(df)-100:] 
-model = SARIMAX(endog=train_df["values"], order=(70,1, 0), exog=train_df["spike/deep"])
-res = model.fit()
-start = len(train_df)
-end = len(train_df) + len(test_df) -1
-prediction = res.predict(start, end,exog = test_df["spike/deep"]).rename("prediction")
-ax = df["values"].plot(legend=True,figsize=(16,8))
-prediction.plot(legend=True)
+#train_df = df.iloc[:len(df)-100]
+#test_df = df.iloc[len(df)-100:] 
+#model = SARIMAX(endog=train_df["values"], order=(70,1, 0), exog=train_df["spike/deep"])
+#res = model.fit()
+#start = len(train_df)
+#end = len(train_df) + len(test_df) -1
+#prediction = res.predict(start, end,exog = test_df["spike/deep"]).rename("prediction")
+#ax = df["values"].plot(legend=True,figsize=(16,8))
+#prediction.plot(legend=True)
 
 #forecast dots to the future
 lead = 10
 #calc the decay rate of the history
+
 
 res = u.calculate_decay_rate(df,Exercise)
 res_df = pd.DataFrame(data = res)
@@ -195,11 +192,10 @@ new = u.add_points(res_df["values"],lead)
 new_res_df = pd.DataFrame(data = new)
 
 #Plot the data
-ax = new_res_df[5:].plot(legend=True,figsize=(16,8))
-ax.set_xlim([5,len(new_res_df)-lead])
+#ax = new_res_df[5:].plot(legend=True,figsize=(16,8))
+#ax.set_xlim([5,len(new_res_df)-lead])
 
 res_df = new_res_df
-
 
 #Auto Arima To the dacay list
 train = res_df[1:-lead]
@@ -209,13 +205,15 @@ trend = []
 for i in range(lead -1):
     trend.append(lead -10 -i)
 
-auto_arima(train["values"], exogenous = trend,trend="t").summary()
+#auto_arima(train["values"], exogenous = trend,trend="t").summary()
+
 
 
 train["values"].iloc[-4] = train["values"].iloc[-4]*0.8
 train["values"].iloc[-3] = train["values"].iloc[-4]*0.8
 train["values"].iloc[-2] = train["values"].iloc[-3]*0.8
 train["values"].iloc[-1] = train["values"].iloc[-2]*0.8
+
 
 model = SARIMAX(endog=train["values"], order=(5,1,5))
 model_fit = model.fit()
@@ -233,3 +231,14 @@ for i in range(len(prediction)):
 
 ax = res_df["values"][1:].plot(legend=True,figsize=(16,8))
 prediction.plot(legend=True)
+print("issue plotting")
+dates_to_plot = res_df["dates"][1:len(prediction)]
+
+plt.plot(prediction)
+plt.xlabel("Dates")
+plt.ylabel("Values")
+plt.title("Data Plot")
+plt.show()
+
+
+print(prediction)

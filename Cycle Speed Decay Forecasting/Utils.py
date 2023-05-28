@@ -1,8 +1,7 @@
-
 import numpy as np
 from datetime import datetime
 from datetime import timedelta
-
+import os
 
 
 
@@ -19,20 +18,14 @@ def calculate_angle(a,b,c):
         
     return angle
 
+def delete_folder(Path):
+    directory = os.path.join(os.getcwd(), Path)
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            # Delete each file
+            file_path = os.path.join(root, file)
+            os.remove(file_path)
 
-# Old Version Of "calculate_decay_rate()"
-def calculate_decay_rate(df):
-    decay = []
-    #average decay rate
-    for i in range(1,len(df) -1 ):
-        x1 = df["spike/deep"][i]
-        x2 = df["spike/deep"][i+1]
-        if (x1 == 1) and (x2 == 0):
-            x1_index = i
-        elif (x1 == 0)  and (x2 == 1):
-            decay.append(x1_index/i)
-    decay.append(1)
-    return decay
 
 #insert empty (only dates) rows to the data
 def insert_missing_rows(df,lead):
@@ -41,6 +34,7 @@ def insert_missing_rows(df,lead):
         sum = d + timedelta(seconds=1)
         df["dates"].append(datetime.strftime(sum,"%H:%M:%S:%f"))
         df["values"].append(0)
+
     return df
 
 
@@ -69,6 +63,7 @@ def calculate_decay_rate(df,Exercise):
                         decay["values"].append((len(df) -1) / (i-x1_index))
         else:            
             #average decay rate
+            print("in the squat")
             for i in range(1,len(df) -1 ):
                 x1 = df["spike/deep"][i]
                 x2 = df["spike/deep"][i+1]
@@ -88,7 +83,6 @@ def calculate_decay_rate(df,Exercise):
         print("Error: Variable 'x1_index' referenced before assignment.")
         print(f"Exception: {e}")
         
-
     return decay
 
 
@@ -131,7 +125,6 @@ def add_points(df,lead):
             new["dates"].append(datetime.strftime(add_sec(new["dates"][-1]),"%H:%M:%S:%f"))
             new["values"].append(x2)
 
-            
 
     #Returning the dict populated with the original points + new additional points + forecast points
     return insert_missing_rows(new,lead)
