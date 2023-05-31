@@ -221,7 +221,7 @@ def training_results():
 ########################################################################################################################################################
 
 def getPasswordHash(password):
-    return hashlib.sha256(password).hexdigest()
+    return hashlib.sha256(password.encode('utf-8')).hexdigest()
 
 def validateUser(client, user_name):
     collection = getUserCollection(client)
