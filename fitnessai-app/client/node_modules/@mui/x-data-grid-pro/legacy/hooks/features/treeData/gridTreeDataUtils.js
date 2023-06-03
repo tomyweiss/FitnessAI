@@ -1,0 +1,84 @@
+import { passFilterLogic } from '@mui/x-data-grid/internals';
+export var TREE_DATA_STRATEGY = 'tree-data';
+
+/**
+ * A node is visible if one of the following criteria is met:
+ * - One of its children is passing the filter
+ * - It is passing the filter
+ */
+export var filterRowTreeFromTreeData = function filterRowTreeFromTreeData(params) {
+  var rowTree = params.rowTree,
+    disableChildrenFiltering = params.disableChildrenFiltering,
+    isRowMatchingFilters = params.isRowMatchingFilters;
+  var visibleRowsLookup = {};
+  var filteredRowsLookup = {};
+  var filteredDescendantCountLookup = {};
+  var filterTreeNode = function filterTreeNode(node, isParentMatchingFilters, areAncestorsExpanded) {
+    var shouldSkipFilters = disableChildrenFiltering && node.depth > 0;
+    var isMatchingFilters;
+    if (shouldSkipFilters) {
+      isMatchingFilters = null;
+    } else if (!isRowMatchingFilters || node.type === 'footer') {
+      isMatchingFilters = true;
+    } else {
+      var _isRowMatchingFilters = isRowMatchingFilters(node.id),
+        passingFilterItems = _isRowMatchingFilters.passingFilterItems,
+        passingQuickFilterValues = _isRowMatchingFilters.passingQuickFilterValues;
+      isMatchingFilters = passFilterLogic([passingFilterItems], [passingQuickFilterValues], params.filterModel, params.apiRef);
+    }
+    var filteredDescendantCount = 0;
+    if (node.type === 'group') {
+      node.children.forEach(function (childId) {
+        var _isMatchingFilters;
+        var childNode = rowTree[childId];
+        var childSubTreeSize = filterTreeNode(childNode, (_isMatchingFilters = isMatchingFilters) != null ? _isMatchingFilters : isParentMatchingFilters, areAncestorsExpanded && !!node.childrenExpanded);
+        filteredDescendantCount += childSubTreeSize;
+      });
+    }
+    var shouldPassFilters;
+    switch (isMatchingFilters) {
+      case true:
+        {
+          shouldPassFilters = true;
+          break;
+        }
+      case false:
+        {
+          shouldPassFilters = filteredDescendantCount > 0;
+          break;
+        }
+      default:
+        {
+          shouldPassFilters = isParentMatchingFilters;
+          break;
+        }
+    }
+    visibleRowsLookup[node.id] = shouldPassFilters && areAncestorsExpanded;
+    filteredRowsLookup[node.id] = shouldPassFilters;
+
+    // TODO: Should we keep storing the visibility status of footer independently or rely on the group visibility in the selector ?
+    if (node.type === 'group' && node.footerId != null) {
+      visibleRowsLookup[node.footerId] = shouldPassFilters && areAncestorsExpanded && !!node.childrenExpanded;
+    }
+    if (!shouldPassFilters) {
+      return 0;
+    }
+    filteredDescendantCountLookup[node.id] = filteredDescendantCount;
+    if (node.type === 'footer') {
+      return filteredDescendantCount;
+    }
+    return filteredDescendantCount + 1;
+  };
+  var nodes = Object.values(rowTree);
+  for (var i = 0; i < nodes.length; i += 1) {
+    var node = nodes[i];
+    if (node.depth === 0) {
+      filterTreeNode(node, true, true);
+    }
+  }
+  return {
+    visibleRowsLookup: visibleRowsLookup,
+    filteredRowsLookup: filteredRowsLookup,
+    filteredDescendantCountLookup: filteredDescendantCountLookup
+  };
+};
