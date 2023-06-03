@@ -65,9 +65,10 @@ if __name__ == '__main__':
                 #Extract  the dots from the image,every dots contain x,y,z,visabillity and saved in arr
                 try:
                     landmarks = results.pose_landmarks.landmark
-                except:
-                    pass
+                except Exception as e:
+                    print(f"An error occurred: {e}")
                 
                 # Get coordinates 
                 R_elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
-    print ("1111111")
+
+            
