@@ -4,6 +4,7 @@ import torchvision.transforms as transforms
 import pickle
 import numpy as np
 
+
 # Set the device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
