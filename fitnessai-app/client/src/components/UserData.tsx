@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import Webcam from "react-webcam";
-import { TrackingResource, StartTracking, DeleteTraining, FinishTraining } from '../api/api';
+import { TrackingResource, StartTracking, DeleteTraining, FinishTraining, AnalyzeTraining } from '../api/api';
 import Grid from '@mui/material/Unstable_Grid2';
 import Button from '@mui/material/Button';
 
@@ -10,8 +10,8 @@ const videoConstraints = {
   facingMode: "user"
 };
 
-const waitIntervalSeconds = 4;
-const trackingIntervalSeconds = 9;
+const waitIntervalSeconds = 1;
+const trackingIntervalSeconds = 1;
 
 let trackingNumber = "";
 
@@ -86,13 +86,17 @@ export const UserData = (props:any, _:any) => {
 
   const retakeTracking = () => {
     DeleteTraining(props.params.userName, trackingNumber).then(res => {
-      startTrackingTimer()
+      startTrackingTimer();
     })
   };
 
   const moveToResults = () => {
-    debugger;
-    props.setPageStatus(4) 
+    AnalyzeTraining(props.params.userName, trackingNumber).then(res => {
+      props.setPageStatus(4);
+    }).catch(err => {
+      console.log(err);
+    })
+    
   };
 
   return (

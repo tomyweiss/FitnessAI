@@ -3,6 +3,7 @@ from flask_cors import cross_origin, CORS
 from datastore import getClient, getUserCollection, getTrainingCollection
 import hashlib
 import uuid
+from models_integration import *
 
 app = Flask(__name__)
 CORS(app)
@@ -23,8 +24,6 @@ images_field = "images"
 id_field = "_id"
 timestamp_field = "timestamp"
 
-
-
 tracking_type_field = "tracking_type"
 tracking_squat = "squat"
 tracking_deadlift = "deadlift"
@@ -33,12 +32,6 @@ tracking_bench_press = "bench_press"
 status_field = "status"
 status_passed = "Passed"
 status_failed = "Failed"
-
-# TODO: define a real tracking rhythm
-tracking_rhythm_field = "rhythm"
-rhythm_0 = 0
-rhythm_1 = 1
-rhythm_1 = 1
 
 tracking_rhythm_analysis_field = "rhythm_analysis"
 duration_field = "duration"
@@ -138,7 +131,7 @@ def track_training():
         training_id_field: training_id
     }
 
-    trainingCollection.update({id_field:ref}, {'$push': {images_field: {"content": image_hash, "timestamp":timestamp}}})
+    trainingCollection.update_one({id_field:ref}, {'$push': {images_field: {"content": image_hash, "timestamp":timestamp}}})
 
     return json.dumps(training_id),200,{'Content-Type':'application/json'}
 
@@ -179,9 +172,32 @@ def finish_training():
         training_id_field: training_id
     }
 
-    res = trainingCollection.update({id_field:ref}, {"$set":{training_status_field:"Done"}})
+    res = trainingCollection.update_one({id_field:ref}, {"$set":{training_status_field:"Done"}})
 
-    return json.dumps(res),200,{'Content-Type':'application/json'}
+    return json.dumps(""),200,{'Content-Type':'application/json'}
+
+@app.route("/api/analyze", methods=["POST"])
+@cross_origin()
+def analyze():
+    client = getClient()
+    content = request.get_json()
+    user_name = content[user_name_field]
+    training_id = content[training_id_field]
+
+    if validateUser(client, user_name) == False:
+        return json.dumps("User does not exist"),403,{'Content-Type':'application/json'}
+    
+    photos = fetch_photos_from_mongodb(training_id)
+    
+    # exercise = analyse_xgboost_photos(photos, id)
+    # analyse_sarima_photos(photos, id)
+    # analyse_CNN_photos(photos, id, exercise)
+
+    exercise = analyse_xgboost_photos_mock(photos, training_id)
+    analyse_sarima_photos_mock(photos, training_id)
+    analyse_CNN_photos_mock(photos, training_id, exercise)
+
+    return json.dumps(""),200,{'Content-Type':'application/json'}
 
 @app.route("/api/training_results", methods=["GET"])
 @cross_origin()
@@ -195,7 +211,6 @@ def training_results():
         training_id_field: training,
         status_field: status_passed,
         tracking_type_field: tracking_squat,
-        tracking_rhythm_field: rhythm_0,
         tracking_rhythm_analysis_field: status_failed,
         duration_field: 90,
         insights_fields: [
