@@ -29,7 +29,7 @@ samples = 0
 time.sleep(5)
 
 #truncates the 'Squat Downs' folder
-relative_path = r'C:\Users\mosac\Git Repositories\FitnessAI\FitnessAI\Cycle Speed Decay Forecasting\Flexing OR Stretching'
+relative_path = r'C:\Users\mosac\Git Repositories\FitnessAI\FitnessAI\models\data\Flexing OR Stretching'
 u.delete_folder(relative_path)
 
 
