@@ -1,15 +1,12 @@
 import mediapipe as mp
 import cv2
 import numpy as np
-from  matplotlib import pyplot as plt
-import matplotlib.image as mpimg
 import pandas as pd
 from  xgboost import XGBClassifier
-import  xgboost
 import os
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
-import pickle
+
 
 
 def calculate_angle(a,b,c):
@@ -64,8 +61,8 @@ for filename in os.listdir(directory):
             #Extract  the dots from the image,every dots contain x,y,z,visabillity and saved in arr
             try:
                 landmarks = results.pose_landmarks.landmark
-            except Exception as e:
-                print(f"An error occurred: {e}")
+            except:
+                pass
             
             # Get coordinates 
             R_elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
@@ -126,31 +123,35 @@ y_test = df_test['label']
 
 
 try:
-    model_path = r"C:\Users\mosac\Git Repositories\FitnessAI\Exercises Classification\Saved_XGB.pickle"  # Path to the saved model file
-    # Load the saved model
-    saved_model = pickle.load(open(model_path, "rb"))
-    # Create an XGBClassifier instance
-    xgb_classifier = XGBClassifier()
-    # Load the saved model into the XGBClassifier
-    xgb_classifier._Booster = saved_model
-    # Now, you can use the xgb_classifier for prediction
-    xgb_predictions = xgb_classifier.predict(X_test)
+    filename = r"C:\Users\mosac\Git Repositories\FitnessAI\Exercises Classification\xgb_model.json"
+    loaded_model = XGBClassifier()
+    loaded_model.load_model(filename)
+
+    # Use the loaded model for predictions
+    xgb_predictions = loaded_model.predict(X_test)
 
 except Exception as e:
     print(e)
 
+print(xgb_predictions)
+
 # Perform majority vote
-squat_count = xgb_predictions.count(0)
-deadlift_count = xgb_predictions.count(1)
-bench_press_count = xgb_predictions.count(2)
+deadlift_count = np.count_nonzero(xgb_predictions == 0)
+squat_count = np.count_nonzero(xgb_predictions == 1)
+bench_press_count = np.count_nonzero(xgb_predictions == 2)
 
 # Determine the output based on the majority
 if squat_count > deadlift_count and squat_count > bench_press_count:
     output = "squat"
+    percent = squat_count
 elif deadlift_count > squat_count and deadlift_count > bench_press_count:
     output = "deadlift"
+    percent = deadlift_count
 else:
     output = "bench press"
+    percent = bench_press_count
+
+percent = (percent/ len(xgb_predictions) ) * 100
 
 #Print accuracy of train and test
-print(output)
+print(f"The Exercise that you preformed is: {output} in {round(percent,2)}%")
