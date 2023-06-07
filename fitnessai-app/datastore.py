@@ -4,6 +4,7 @@ dataBaseName = "fitness-db"
 usersDBTable = "users"
 trainingDBTable = "training"
 resultsDBTable = "results"
+sensorsDBTable = "sensors"
 dataBaseURL = "localhost"
 dataBasePort = "27017"
 
@@ -25,3 +26,8 @@ def getTrainingCollection(client):
 def getResultCollection(client):
     db = client[dataBaseName]
     return db[resultsDBTable]
+
+
+def getSensorsCollection(client):
+    db = client[dataBaseName]
+    return db[sensorsDBTable]
