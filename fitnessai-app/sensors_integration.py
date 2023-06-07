@@ -2,6 +2,7 @@ from weakref import ref
 from datastore import getSensorsCollection, getClient
 
 # loads results from mongo(results collection)
+
 def save_sensor_data_in_mongodb(result, id):
     client = getClient()
     collection = getSensorsCollection(client)
