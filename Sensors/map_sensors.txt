@@ -1,0 +1,11 @@
+Right Leg = {
+Top:
+Mid:
+Bottom:
+}
+
+Left Leg = {
+Top:
+Mid:
+Bottom:
+}

@@ -7,9 +7,9 @@ __pycache__/
 *.so
 
 #JS Installations
-fitnessai-app\client\node_modules
+fitnessai-app/client/node_modules/*
 
-
+fitnessai-app/trainings/*
 
 # Distribution / packaging
 .Python
