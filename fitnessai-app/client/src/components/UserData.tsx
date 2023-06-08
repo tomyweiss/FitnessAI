@@ -20,6 +20,7 @@ export const UserData = (props:any, _:any) => {
   const webcamRef = useRef<Webcam>(null);
 
   const capture = useCallback(() => {
+
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
       TrackingResource(props.params.userName, trackingNumber, imageSrc);
@@ -53,6 +54,7 @@ export const UserData = (props:any, _:any) => {
         clearInterval(interval)
         StartTracking(props.params.userName).then((response:any) => {
           trackingNumber = response.data;
+          props.setTrainingID(trackingNumber)
           setTrainingStatus(2);
           trackingCountdown();
         });
@@ -96,7 +98,6 @@ export const UserData = (props:any, _:any) => {
     }).catch(err => {
       console.log(err);
     })
-    
   };
 
   return (

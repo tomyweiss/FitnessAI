@@ -197,40 +197,40 @@ def analyze():
     analyse_sarima_photos_mock(photos, training_id)
     analyse_CNN_photos_mock(photos, training_id, exercise)
 
-    return json.dumps(""),200,{'Content-Type':'application/json'}
+    return json.dumps(fetch_exercise(training_id)),200,{'Content-Type':'application/json'}
 
 @app.route("/api/training_results", methods=["GET"])
 @cross_origin()
 def training_results():
     params = request.args.to_dict()
-    user_name = params[user_name_field]
     training = params[training_id_field]
 
-    return {
-        user_name_field: user_name,
-        training_id_field: training,
-        status_field: status_passed,
-        tracking_type_field: tracking_squat,
-        tracking_rhythm_analysis_field: status_failed,
-        duration_field: 90,
-        insights_fields: [
-            {
-                "name": "xxx",
-                "description": "xxx",
-                "how": "xxx"
-            },
-            {
-                "name": "xxx",
-                "description": "xxx",
-                "how": "xxx"
-            },
-            {
-                "name": "xxx",
-                "description": "xxx",
-                "how": "xxx"
-            }
-        ]
-    },200,{'Content-Type':'application/json'}
+    return fetch_exercise(training),200,{'Content-Type':'application/json'}
+    # return {
+    #     user_name_field: user_name,
+    #     training_id_field: training,
+    #     status_field: status_passed,
+    #     tracking_type_field: tracking_squat,
+    #     tracking_rhythm_analysis_field: status_failed,
+    #     duration_field: 90,
+    #     insights_fields: [
+    #         {
+    #             "name": "xxx",
+    #             "description": "xxx",
+    #             "how": "xxx"
+    #         },
+    #         {
+    #             "name": "xxx",
+    #             "description": "xxx",
+    #             "how": "xxx"
+    #         },
+    #         {
+    #             "name": "xxx",
+    #             "description": "xxx",
+    #             "how": "xxx"
+    #         }
+    #     ]
+    # },200,{'Content-Type':'application/json'}
 
 
 ########################################################################################################################################################

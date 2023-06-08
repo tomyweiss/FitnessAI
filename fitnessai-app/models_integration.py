@@ -29,6 +29,11 @@ def fetch_photos_from_mongodb(id):
 
     return images
 
+def fetch_exercise(id):
+    client = getClient()
+    results = getResultCollection(client)
+
+    return results.find_one({"_id.training_id": id})
 
 # result = 0/1/2
 def save_results_xgboost_in_mongodb(result, id):
@@ -39,8 +44,6 @@ def save_results_xgboost_in_mongodb(result, id):
     }
     
     collection.insert_one(dict({"_id": ref, "training_type_field": result}))
-
-
 
 # result is in format: ([numbers],[numbers])
 def save_results_sarima_in_mongodb(result, id):
@@ -54,9 +57,7 @@ def save_results_sarima_in_mongodb(result, id):
     print(doc)
     res = collection.update_one(
          {"_id": ref}, doc)
-
-
-
+    
 # result is 0/1 (good/bad)
 def save_results_CNN_in_mongodb(result, id):
     client = getClient()

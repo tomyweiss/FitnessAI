@@ -94,12 +94,11 @@ export const FinishTraining = async (userName: string, trackingNumber: string) =
   }
 };
 
-export const GetTrainingResults = async (userName: string, trackingNumber: string) => {
+export const GetTrainingResults = async (trackingNumber: number) => {
   try {
     const response = await api.get('/training_results',
       {
         params: {
-          "user_name": userName,
           "training_id": trackingNumber
         }
       });

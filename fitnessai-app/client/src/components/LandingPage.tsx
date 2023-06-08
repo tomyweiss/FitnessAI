@@ -12,8 +12,8 @@ import Divider from '@mui/material/Divider';
 import { AppState } from '../store/reducer';
 import { connect } from 'react-redux';
 import { UserData } from './UserData';
-import { ResultsDashboard } from './ResultsDashboard';
-import { SetCounter, PageState, LandingPageNumber, TeamPageNumber, AboutPageNumber, UserDataNumber, ResultsDashboardPage } from '../store/actions';
+import ResultsDashboard from './ResultsDashboard';
+import { SetCounter, PageState, LandingPageNumber, TeamPageNumber, AboutPageNumber, UserDataNumber, ResultsDashboardPage, SetTrainingID } from '../store/actions';
 
 class LandingPage extends React.PureComponent<any, {}> {
 
@@ -43,7 +43,7 @@ class LandingPage extends React.PureComponent<any, {}> {
             this.props.pageStatus == AboutPageNumber?
               <img src={about} width="100%" style={{marginTop: "10px"}}/>:
             this.props.pageStatus == UserDataNumber?
-              <UserData params={this.props.user} getCounter={this.getCounter} setCounter={this.props.setCounter} setPageStatus={this.props.setPageStatus}/>:
+              <UserData params={this.props.user} getCounter={this.getCounter} setCounter={this.props.setCounter} setPageStatus={this.props.setPageStatus} setTrainingID={this.props.setTrainingID} />:
             this.props.pageStatus == ResultsDashboardPage? 
               <ResultsDashboard />: null
            }
@@ -52,16 +52,19 @@ class LandingPage extends React.PureComponent<any, {}> {
   } 
 }
 
-const mapState = (state: AppState) => ({
-  pageStatus: state.pageStatus,
-  loggedIn: state.loggedIn,
-  user: state.user,
-  counter: state.counter
-})
+const mapState = (state: AppState) => {
+  return {
+    pageStatus: state.pageStatus,
+    loggedIn: state.loggedIn,
+    user: state.user,
+    counter: state.counter
+  }
+}
 
 const mapDispatchToProps = {
   setCounter: SetCounter,
-  setPageStatus: PageState
+  setPageStatus: PageState,
+  setTrainingID: SetTrainingID
 }
 
 export default connect(mapState, mapDispatchToProps)(LandingPage);
