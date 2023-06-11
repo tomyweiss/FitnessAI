@@ -6,7 +6,8 @@ export interface AppState {
   showLoginModal: boolean
   showRegisterModal: boolean
   pageStatus: number
-  counter: number
+  counter: number,
+  trackingID: number
 }
 
 export enum AppStateType {
@@ -18,10 +19,11 @@ export enum AppStateType {
     SET_LOGGED_IN = 'SET_LOGGED_IN',
     SET_PAGE_STATUS = 'SET_PAGE_STATUS',
     LOG_OUT = 'LOGGED_OUT',
-    SET_COUNTER = 'SET_COUNTER'
+    SET_COUNTER = 'SET_COUNTER',
+    SET_TRAINING_ID = 'SET_TRAINING_ID'
 }
 
-type CounterAction = SHOW_LOGIN | HIDE_LOGIN | SHOW_REGISTER | HIDE_REGISTER | SET_USER | SET_LOGGED_IN | SET_PAGE_STATUS | LOG_OUT | SET_COUNTER;
+type CounterAction = SHOW_LOGIN | HIDE_LOGIN | SHOW_REGISTER | HIDE_REGISTER | SET_USER | SET_LOGGED_IN | SET_PAGE_STATUS | LOG_OUT | SET_COUNTER | SET_TRAINING_ID;
 
 export interface SHOW_LOGIN {
     type: AppStateType.SHOW_LOGIN;
@@ -66,8 +68,13 @@ export interface SET_COUNTER {
     type: AppStateType.SET_COUNTER;
     value: number;
 }
+
+export interface SET_TRAINING_ID {
+    type: AppStateType.SET_TRAINING_ID;
+    value: number;
+}
   
-export function CounterReducer(state: AppState = { loggedIn: false, user: {userName:"", fullName: "", email:"", height:0, weight:0, sex: ""}, showLoginModal:false,showRegisterModal:false, pageStatus: 0, counter: 17}, action: CounterAction) {
+export function CounterReducer(state: AppState = { loggedIn: false, user: {userName:"", fullName: "", email:"", height:0, weight:0, sex: ""}, showLoginModal:false,showRegisterModal:false, pageStatus: 0, counter: 17, trackingID: 0}, action: CounterAction) {
     switch (action.type) {
       case AppStateType.SHOW_LOGIN:
         return { 
@@ -96,13 +103,13 @@ export function CounterReducer(state: AppState = { loggedIn: false, user: {userN
             }
         case AppStateType.SET_PAGE_STATUS:
             return { 
-            ...state,
+                ...state,
                 pageStatus: action.value
             }
         case AppStateType.SET_COUNTER:
             return { 
-            ...state,
-                counter: action.value
+                ...state,
+                counter : action.value
             }
         case AppStateType.SET_USER:
             return { 
@@ -112,6 +119,11 @@ export function CounterReducer(state: AppState = { loggedIn: false, user: {userN
                     showLoginModal: false,
                     pageStatus: 3
                 }
+        case AppStateType.SET_TRAINING_ID:
+            return { 
+                ...state,
+                trackingID: action.value
+            }
         case AppStateType.LOG_OUT:
             return { 
                 ...state,

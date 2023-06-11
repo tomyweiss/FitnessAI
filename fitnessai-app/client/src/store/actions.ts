@@ -1,4 +1,3 @@
-import { ResultsDashboard } from './../components/ResultsDashboard';
 import { AppStateType }  from './reducer';
 
 export type User = {
@@ -57,4 +56,8 @@ export function SetCounter(counter:number){
 
 export function GetCounter(){
     return { type: AppStateType.SET_COUNTER }
+}
+
+export function SetTrainingID(trackingID:number){
+    return { type: AppStateType.SET_TRAINING_ID, value: trackingID }
 }
