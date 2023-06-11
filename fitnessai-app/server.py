@@ -4,6 +4,8 @@ from datastore import getClient, getUserCollection, getTrainingCollection
 import hashlib
 import uuid
 from models_integration import *
+import os
+import shutil
 
 app = Flask(__name__)
 CORS(app)
@@ -104,6 +106,8 @@ def start_tracking_training():
             training_id_field: training_id
      }
     
+    os.mkdir("trainings/" + training_id, 0o777)
+    
     trainingCollection.insert_one({
         id_field: ref,
         user_name_field: content[user_name_field],
@@ -133,6 +137,15 @@ def track_training():
 
     trainingCollection.update_one({id_field:ref}, {'$push': {images_field: {"content": image_hash, "timestamp":timestamp}}})
 
+    index = image_hash.index(",")
+    image_to_decode = image_hash[index+1:]
+    decoded_data=base64.b64decode((image_to_decode))
+    
+    path = "trainings/"+training_id+"/"+str(timestamp) + ".jpeg"
+    img_file = open(path, 'wb')
+    img_file.write(decoded_data)
+    img_file.close()
+
     return json.dumps(training_id),200,{'Content-Type':'application/json'}
 
 @app.route("/api/delete_training", methods=["POST"])
@@ -151,9 +164,12 @@ def delete_training():
         training_id_field: training_id
     }
 
-    res = trainingCollection.delete_one({'_id':ref})    
+   
+    trainingCollection.delete_one({'_id':ref})    
+    dir = 'trainings/' + training_id
+    shutil.rmtree(dir)
 
-    return json.dumps(res),200,{'Content-Type':'application/json'}
+    return json.dumps(""),200,{'Content-Type':'application/json'}
 
 
 @app.route("/api/finish_training", methods=["POST"])

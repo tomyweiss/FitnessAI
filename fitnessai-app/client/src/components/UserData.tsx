@@ -11,7 +11,7 @@ const videoConstraints = {
 };
 
 const waitIntervalSeconds = 1;
-const trackingIntervalSeconds = 1;
+const trackingIntervalSeconds = 10;
 
 let trackingNumber = "";
 
