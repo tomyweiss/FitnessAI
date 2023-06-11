@@ -11,7 +11,7 @@ const videoConstraints = {
 };
 
 const waitIntervalSeconds = 1;
-const trackingIntervalSeconds = 10;
+const trackingIntervalSeconds = 1;
 
 let trackingNumber = "";
 
@@ -111,7 +111,7 @@ export const UserData = (props:any, _:any) => {
       </Grid>
       <div style={{marginTop:"30px"}}>
         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-          <Grid xs={4} container />
+          <Grid xs={5} container />
           <Grid xs={4} container>
             {
               trainingStatus == 0? null:
@@ -131,7 +131,7 @@ export const UserData = (props:any, _:any) => {
                 </div>:null
             }
           </Grid>
-          <Grid xs={4} container />
+          <Grid xs={3} container />
         </Grid>
       </div>
       {

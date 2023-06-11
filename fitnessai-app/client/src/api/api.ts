@@ -121,3 +121,18 @@ export const AnalyzeTraining = async (userName: string, trackingNumber: string) 
     return response;
   }
 };
+
+export const ResultsAvailable = async (trackingNumber: number) => {
+  try {
+    const response = await api.get('/results_available',
+      {
+        params: {
+          "training_id": trackingNumber
+        }
+      });
+
+    return response.data;
+  } catch (response) {
+    return response;
+  }
+};
