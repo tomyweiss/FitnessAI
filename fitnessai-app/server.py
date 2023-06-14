@@ -163,7 +163,6 @@ def delete_training():
     ref = {
         training_id_field: training_id
     }
-
    
     trainingCollection.delete_one({'_id':ref})    
     dir = 'trainings/' + training_id
@@ -222,32 +221,18 @@ def training_results():
     training = params[training_id_field]
 
     return fetch_exercise(training),200,{'Content-Type':'application/json'}
-    # return {
-    #     user_name_field: user_name,
-    #     training_id_field: training,
-    #     status_field: status_passed,
-    #     tracking_type_field: tracking_squat,
-    #     tracking_rhythm_analysis_field: status_failed,
-    #     duration_field: 90,
-    #     insights_fields: [
-    #         {
-    #             "name": "xxx",
-    #             "description": "xxx",
-    #             "how": "xxx"
-    #         },
-    #         {
-    #             "name": "xxx",
-    #             "description": "xxx",
-    #             "how": "xxx"
-    #         },
-    #         {
-    #             "name": "xxx",
-    #             "description": "xxx",
-    #             "how": "xxx"
-    #         }
-    #     ]
-    # },200,{'Content-Type':'application/json'}
 
+@app.route("/api/results_available", methods=["GET"])
+@cross_origin()
+def results_available():
+    params = request.args.to_dict()
+    training = params[training_id_field]
+    ext = fetch_exercise(training)
+    try:
+        res = ext["finished_analysis"]
+        return json.dumps(res),200,{'Content-Type':'application/json'}
+    except Exception:
+        return json.dumps(False),200,{'Content-Type':'application/json'}
 
 ########################################################################################################################################################
 
