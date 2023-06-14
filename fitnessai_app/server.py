@@ -201,63 +201,62 @@ def finish_training():
     return json.dumps(""),200,{'Content-Type':'application/json'}
 
 
-@app.route("/api/analyze", methods=["POST"])
-@cross_origin()
-async def analyze():
-    client = getClient()
-    content = request.get_json()
-    user_name = content[user_name_field]
-    training_id = content[training_id_field]
-    if not validateUser(client, user_name):
-        return await asyncio.to_thread(json.dumps, ("User does not exist",)), 403, {'Content-Type': 'application/json'}
-
-    exercise_task = asyncio.create_task(analyze_xgboost_photos(training_id))
-    S_res_task = asyncio.create_task(analyze_sarima_photos(training_id, exercise_task.result()))
-
-    await asyncio.gather(exercise_task, S_res_task)
-    exercise = exercise_task.result()
-    S_res = S_res_task.result()
-
-    await save_results_sarima_in_mongodb(S_res, training_id)
-    await analyze_CNN_photos(exercise)
-
-    return await asyncio.to_thread(json.dumps, (fetch_exercise(training_id),)), 200, {'Content-Type': 'application/json'}
-
 # @app.route("/api/analyze", methods=["POST"])
 # @cross_origin()
-# def analyze():
+# async def analyze():
 #     client = getClient()
 #     content = request.get_json()
 #     user_name = content[user_name_field]
 #     training_id = content[training_id_field]
 #     if not validateUser(client, user_name):
-#         return json.dumps("User does not exist"),403,{'Content-Type':'application/json'}
+#         return await asyncio.to_thread(json.dumps, ("User does not exist",)), 403, {'Content-Type': 'application/json'}
 #
-#     #photos = fetch_photos_from_mongodb(training_id)
+#     exercise_task = asyncio.create_task(analyze_xgboost_photos(training_id))
+#     S_res_task = asyncio.create_task(analyze_sarima_photos(training_id, await exercise_task.result()))
 #
-#     # exercise = analyse_xgboost_photos(photos, id)
-#     # analyse_sarima_photos(id,exercise)
-#     # analyse_CNN_photos(photos, id, exercise)
+#     await asyncio.gather(exercise_task, S_res_task)
+#     exercise = exercise_task.result()
+#     S_res = S_res_task.result()
 #
-#     # exercise = analyse_xgboost_photos_mock(photos, training_id)
-#     # analyse_sarima_photos_mock(photos, training_id)
-#     # analyse_CNN_photos_mock(photos, training_id, exercise)
+#     await save_results_sarima_in_mongodb(S_res, training_id)
+#     await analyze_CNN_photos(exercise)
 #
-#     # training_id = '80b6ff11-56f1-41a3-88a5-3b9a8b2e44ce'
-#     exercise = analyze_xgboost_photos(training_id)
-#     S_res = analyze_sarima_photos(training_id, exercise)
-#     save_results_sarima_in_mongodb(S_res, training_id)
-#     analyze_CNN_photos(exercise,training_id )
-#
-#     if exercise == 1:
-#         os.environ['EXERCISE'] = 'Squat'
-#     elif exercise == 0:
-#         os.environ['EXERCISE'] = 'Deadlift'
-#     else:
-#         os.environ['EXERCISE'] = 'Bench Press'
-#
-#     return json.dumps(fetch_exercise(training_id)),200,{'Content-Type':'application/json'}
-#
+#     return await asyncio.to_thread(json.dumps, (fetch_exercise(training_id),)), 200, {'Content-Type': 'application/json'}
+
+@app.route("/api/analyze", methods=["POST"])
+@cross_origin()
+def analyze():
+    client = getClient()
+    content = request.get_json()
+    user_name = content[user_name_field]
+    training_id = content[training_id_field]
+    if not validateUser(client, user_name):
+        return json.dumps("User does not exist"),403,{'Content-Type':'application/json'}
+
+    #photos = fetch_photos_from_mongodb(training_id)
+
+    # exercise = analyse_xgboost_photos(photos, id)
+    # analyse_sarima_photos(id,exercise)
+    # analyse_CNN_photos(photos, id, exercise)
+
+    # exercise = analyse_xgboost_photos_mock(photos, training_id)
+    # analyse_sarima_photos_mock(photos, training_id)
+    # analyse_CNN_photos_mock(photos, training_id, exercise)
+
+    exercise = analyze_xgboost_photos(training_id)
+    S_res = analyze_sarima_photos(training_id, exercise)
+    save_results_sarima_in_mongodb(S_res, training_id)
+    analyze_CNN_photos(exercise,training_id )
+
+    # if exercise == 1:
+    #     os.environ['EXERCISE'] = 'Squat'
+    # elif exercise == 0:
+    #     os.environ['EXERCISE'] = 'Deadlift'
+    # else:
+    #     os.environ['EXERCISE'] = 'Bench Press'
+
+    return json.dumps(fetch_exercise(training_id)),200,{'Content-Type':'application/json'}
+
 
 @app.route("/api/training_results", methods=["GET"])
 @cross_origin()

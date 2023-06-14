@@ -75,7 +75,7 @@ def save_results_CNN_in_mongodb(result, id):
         "training_id": id
     }
     res = collection.update_one(
-        {"_id": ref}, {"$set": {"CNN_result": result, "exercise_status": True}})
+        {"_id": ref}, {"$set": {"CNN_result": result, "finished_analysis": True}})
     
 
 def analyze_CNN_photos(exercise, id):
