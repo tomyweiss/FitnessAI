@@ -78,15 +78,23 @@ def save_results_CNN_in_mongodb(result, id):
         {"_id": ref}, {"$set": {"CNN_result": result, "exercise_status": True}})
     
 
-def analyze_CNN_photos(exercise):
+def analyze_CNN_photos(exercise, id):
     if exercise == 1:
         print('Analyze squat')
-        test_squat()
+        result = test_squat()
     elif exercise == 0:
         print('Analyze deadlift')
-        test_deadlift()
+        result = test_deadlift()
     else:
         print('Analyze Bench Press')
-        test_bench()
+        result = test_bench()
+    save_results_CNN_in_mongodb(result, id)
+    
 
 ########################## CNN ##########################
+
+def fetch_exercise(id):
+    client = getClient()
+    results = getResultCollection(client)
+
+    return results.find_one({"_id.training_id": id})

@@ -110,7 +110,7 @@ def test_squat():
 
 
     if folder_status == 'not good':
-        return "Failed!"
+        return 0
     else:
-        return "Passed!"
+        return 1
      

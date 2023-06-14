@@ -25,6 +25,7 @@ def calculate_angle(a,b,c):
 
 
 def calculate_clssification(directory):
+        to_return = 0    
         #3 angale
         #every anagle creates from:a,b,c
         test = {

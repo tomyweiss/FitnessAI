@@ -8,9 +8,7 @@ from datastore import getClient, getTrainingCollection, getUserCollection
 from flask import Flask, json, request
 from flask_cors import CORS, cross_origin
 # from models_integration import *
-from models_integration2 import (analyze_CNN_photos, analyze_sarima_photos,
-                                 analyze_xgboost_photos,
-                                 save_results_sarima_in_mongodb)
+from models_integration2 import *
 
 app = Flask(__name__)
 CORS(app)
@@ -212,7 +210,7 @@ def analyze():
     if not validateUser(client, user_name):
         return json.dumps("User does not exist"),403,{'Content-Type':'application/json'}
 
-    photos = fetch_photos_from_mongodb(training_id)
+    #photos = fetch_photos_from_mongodb(training_id)
 
     # exercise = analyse_xgboost_photos(photos, id)
     # analyse_sarima_photos(id,exercise)
@@ -226,7 +224,7 @@ def analyze():
     exercise = analyze_xgboost_photos(training_id)
     S_res = analyze_sarima_photos(training_id, exercise)
     save_results_sarima_in_mongodb(S_res, training_id)
-    os.environ['EXERCISE_STATUS'] = analyze_CNN_photos(exercise)
+    analyze_CNN_photos(exercise,training_id )
 
     if exercise == 1:
         os.environ['EXERCISE'] = 'Squat'

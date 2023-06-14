@@ -109,6 +109,6 @@ def test_bench():
     print(f"The bench press performed {folder_status}.")
 
     if folder_status == 'not good':
-        return "Failed!"
+        return 0
     else:
-        return "Passed!"
+        return 1
