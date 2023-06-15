@@ -23,11 +23,11 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     setTrainingType = () => {
         let trainingName, video = ""
         switch(this.state.training_type_field){
-            case 0:
+            case 1:
                 trainingName = "Squat"
                 video = "https://youtu.be/gcNh17Ckjgg"
                 break
-            case 1:
+            case 0:
                 trainingName = "Deadlift"
                 video = "https://youtu.be/XxWcirHIwVo"
                 break
