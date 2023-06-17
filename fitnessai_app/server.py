@@ -244,16 +244,8 @@ def analyze():
     # analyse_CNN_photos_mock(photos, training_id, exercise)
 
     exercise = analyze_xgboost_photos(training_id)
-    S_res = analyze_sarima_photos(training_id, exercise)
-    save_results_sarima_in_mongodb(S_res, training_id)
+    analyze_sarima_photos(training_id, exercise)
     analyze_CNN_photos(exercise,training_id )
-
-    # if exercise == 1:
-    #     os.environ['EXERCISE'] = 'Squat'
-    # elif exercise == 0:
-    #     os.environ['EXERCISE'] = 'Deadlift'
-    # else:
-    #     os.environ['EXERCISE'] = 'Bench Press'
 
     return json.dumps(fetch_exercise(training_id)),200,{'Content-Type':'application/json'}
 

@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
+import torch.nn.functional as F
 import pickle
 import numpy as np
 from PIL import Image
@@ -11,24 +12,25 @@ def test_deadlift():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Define the network model
+# Define the network model
     class Net(nn.Module):
         def __init__(self):
             super(Net, self).__init__()
             
             self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1)
             self.conv2 = nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1)
-            self.fc1 = nn.Linear(32 * 32 * 32, 256)
-            self.fc2 = nn.Linear(256, 128)
-            self.fc3 = nn.Linear(128, 2)  # Assuming 2 classes: good and not good
+            self.fc1 = nn.Linear(32 * 32 * 32, 128)
+            self.fc2 = nn.Linear(128, 64)
+            self.fc3 = nn.Linear(64, 2)  # Assuming 2 classes: deadlift and non-deadlift
             
         def forward(self, x):
-            x = nn.functional.relu(self.conv1(x))
-            x = nn.functional.max_pool2d(x, kernel_size=2, stride=2)
-            x = nn.functional.relu(self.conv2(x))
-            x = nn.functional.max_pool2d(x, kernel_size=2, stride=2)
+            x = F.relu(self.conv1(x))
+            x = F.max_pool2d(x, kernel_size=2, stride=2)
+            x = F.relu(self.conv2(x))
+            x = F.max_pool2d(x, kernel_size=2, stride=2)
             x = x.view(x.size(0), -1)  # Flatten the input tensor
-            x = nn.functional.relu(self.fc1(x))
-            x = nn.functional.relu(self.fc2(x))
+            x = F.relu(self.fc1(x))
+            x = F.relu(self.fc2(x))
             x = self.fc3(x)
             return x
 
@@ -63,6 +65,7 @@ def test_deadlift():
             outputs = net(image)
             _, predicted = torch.max(outputs.data, 1)
         
+        print(predicted.item())
         # Convert the prediction to a human-readable label
         label = "good" if predicted.item() == 0 else "not good"
         
@@ -108,3 +111,7 @@ def test_deadlift():
         return 0
     else:
         return 1
+
+
+
+

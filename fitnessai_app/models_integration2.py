@@ -44,11 +44,11 @@ def analyze_xgboost_photos(id):
 
 def analyze_sarima_photos(id,exercise):
     if exercise == 1:
-        return calc_decay(id,'squat')
+        save_results_sarima_in_mongodb(calc_decay(id,'squat'),id)
     elif exercise == 0:
-        return calc_decay(id,'deadlift')
+        save_results_sarima_in_mongodb(calc_decay(id,'deadlift'),id)
     else:
-        return calc_decay(id,'bench')
+        save_results_sarima_in_mongodb(calc_decay(id,'bench'),id)
 
 
 # result is in format: ([numbers],[numbers])
