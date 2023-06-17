@@ -65,7 +65,6 @@ def test_deadlift():
             outputs = net(image)
             _, predicted = torch.max(outputs.data, 1)
         
-        print(predicted.item())
         # Convert the prediction to a human-readable label
         label = "good" if predicted.item() == 0 else "not good"
         
