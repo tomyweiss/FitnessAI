@@ -10,8 +10,8 @@ const videoConstraints = {
   facingMode: "user"
 };
 
-const waitIntervalSeconds = 5;
-const trackingIntervalSeconds = 10;
+const waitIntervalSeconds = 1;
+const trackingIntervalSeconds = 3;
 
 let trackingNumber = "";
 

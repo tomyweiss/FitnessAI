@@ -6,8 +6,6 @@ from  xgboost import XGBClassifier
 import os
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
-from PIL import Image
-
 
 def calculate_angle(a,b,c):
     a = np.array(a) # First
@@ -183,7 +181,8 @@ def calculate_clssification_from_db(id):
 
         # iterate over files in
         # that directory
-        directory = os.path.join(r'C:\Users\mosac\Git Repositories\FitnessAI\fitnessai_app\trainings', id)
+        directory = os.path.join("/Users/tom.weiss/Documents/FitnessAI/fitnessai_app/trainings/" + id)
+        print(directory)
         for filename in os.listdir(directory):
             f = os.path.join(directory, filename)
             # checking if it is a file
