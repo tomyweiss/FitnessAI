@@ -3,13 +3,14 @@ import hashlib
 import os
 import shutil
 import uuid
-import asyncio
 
 from datastore import getClient, getTrainingCollection, getUserCollection
 from flask import Flask, json, request
 from flask_cors import CORS, cross_origin
-# from models_integration import *
+from models_integration import analyse_xgboost_photos_mock, analyse_sarima_photos_mock,analyse_CNN_photos_mock,fetch_photos_from_mongodb
 from models_integration2 import *
+import time
+from threading import Thread
 
 app = Flask(__name__)
 CORS(app)
@@ -230,23 +231,15 @@ def analyze():
     content = request.get_json()
     user_name = content[user_name_field]
     training_id = content[training_id_field]
+
     if not validateUser(client, user_name):
         return json.dumps("User does not exist"),403,{'Content-Type':'application/json'}
 
-    #photos = fetch_photos_from_mongodb(training_id)
+    photos = fetch_photos_from_mongodb(training_id)
 
-    # exercise = analyse_xgboost_photos(photos, id)
-    # analyse_sarima_photos(id,exercise)
-    # analyse_CNN_photos(photos, id, exercise)
-
-    # exercise = analyse_xgboost_photos_mock(photos, training_id)
-    # analyse_sarima_photos_mock(photos, training_id)
-    # analyse_CNN_photos_mock(photos, training_id, exercise)
-
-    exercise = analyze_xgboost_photos(training_id)
-    analyze_sarima_photos(training_id, exercise)
-    analyze_CNN_photos(exercise,training_id )
-
+    thread = Thread(target = analyze_in_background, args = (photos, training_id))
+    thread.start()
+    
     return json.dumps(fetch_exercise(training_id)),200,{'Content-Type':'application/json'}
 
 
@@ -273,7 +266,6 @@ def results_available():
 
 ########################################################################################################################################################
 
-
 def getPasswordHash(password):
     return hashlib.sha256(password.encode('utf-8')).hexdigest()
 
@@ -293,8 +285,23 @@ def validateUser(client, user_name):
     
     return True
 
+def analyze_in_background(photos, training_id):
+    # exercise = analyse_xgboost_photos_mock(photos, training_id)
+    # analyse_sarima_photos_mock(photos, training_id)
+    # analyse_CNN_photos_mock(photos, training_id, exercise)
+    
+    exercise = analyze_xgboost_photos(training_id)
+    analyze_sarima_photos(training_id, exercise)
+    analyze_CNN_photos(exercise,training_id )
+
 ########################################################################################################################################################
 
 
+config = {
+    "DEBUG": True  # run app in debug mode
+}
+
 if __name__ == "__main__":
-    app.run()
+    # app.run()
+    app.config.from_mapping(config)
+    app.run(port=5000)

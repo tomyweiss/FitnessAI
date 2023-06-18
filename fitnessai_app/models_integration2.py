@@ -1,17 +1,9 @@
-import ipdb
-from datastore import getTrainingCollection, getClient, getResultCollection
-import cv2
-import numpy as np 
-import base64
-
+from datastore import getClient, getResultCollection
 from models.Ex_Classification_Methoods import calculate_clssification_from_db
 from models.Sarimax import calc_decay
 from models.Squat_majority import test_squat
 from models.Dedlift_majority import test_deadlift
 from models.Bench_majority import test_bench
-
-
-
 
 ############################# training_type
 squat = 0
@@ -23,6 +15,7 @@ benchpress = 2
 ########################## XGBOOST ########################## 
 # result = 0/1/2
 def save_results_xgboost_in_mongodb(result, id):
+    print("Yes!!!")
     client = getClient()
     collection = getResultCollection(client)
     ref = {
