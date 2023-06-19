@@ -61,7 +61,7 @@ def save_results_sarima_in_mongodb(result, id):
         "training_id": id
     }
 
-    doc = {"$set": {"sarima_result1": result[0], "sarima_result2": result[1]}}
+    doc = {"$set": {"sarima_forecast": result[0], "sarima_history": result[1]}}
     print(doc)
     res = collection.update_one(
         {"_id": ref}, doc)
@@ -116,7 +116,24 @@ def analyse_xgboost_photos_mock(photos, id):
 
 
 def analyse_sarima_photos_mock(photos, id):
-    serima_mock = ([1, 1], [1, 1])
+    serima_mock = ([ 9.444444444444445,
+    9.444444444444445,
+    9.444444444444445,
+    9.444444444444445,
+    7.488095238095238,
+    5.9904761904761905,
+    4.792380952380952,
+    3.833904761904762,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0], [1, 1])
 
     save_results_sarima_in_mongodb(serima_mock, id)
 

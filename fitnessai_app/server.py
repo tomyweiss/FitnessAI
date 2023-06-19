@@ -248,8 +248,12 @@ def analyze():
 def training_results():
     params = request.args.to_dict()
     training = params[training_id_field]
+    res = json.loads(json.dumps(fetch_exercise(training)))
 
-    return fetch_exercise(training), 200, {'Content-Type':'application/json'}
+    res["sarima_forecast"] = list(filter(lambda x: x != 0, res["sarima_forecast"]))
+    res["sarima_history"] = list(filter(lambda x: x != 0, res["sarima_history"]))
+
+    return res, 200, {'Content-Type':'application/json'}
 
 
 @app.route("/api/results_available", methods=["GET"])
@@ -286,13 +290,14 @@ def validateUser(client, user_name):
     return True
 
 def analyze_in_background(photos, training_id):
-    # exercise = analyse_xgboost_photos_mock(photos, training_id)
-    # analyse_sarima_photos_mock(photos, training_id)
-    # analyse_CNN_photos_mock(photos, training_id, exercise)
+    # time.sleep(9)
+    exercise = analyse_xgboost_photos_mock(photos, training_id)
+    analyse_sarima_photos_mock(photos, training_id)
+    analyse_CNN_photos_mock(photos, training_id, exercise)
     
-    exercise = analyze_xgboost_photos(training_id)
-    analyze_sarima_photos(training_id, exercise)
-    analyze_CNN_photos(exercise,training_id )
+    # exercise = analyze_xgboost_photos(training_id)
+    # analyze_sarima_photos(training_id, exercise)
+    # analyze_CNN_photos(exercise,training_id )
 
 ########################################################################################################################################################
 

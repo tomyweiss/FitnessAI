@@ -31,7 +31,7 @@ class AppFrame extends React.PureComponent<any, {}> {
                     <BottomNavigationAction label="The team" icon={<Diversity3Icon />} />
                     <BottomNavigationAction label="About" icon={<InfoIcon />} />
                     {
-                      this.props.loggedIn? <BottomNavigationAction label="User (Beta)" icon={<InfoIcon />} />: null
+                      this.props.loggedIn? <BottomNavigationAction label="User" icon={<InfoIcon />} />: null
                     }
                 </BottomNavigation>
                 </Box>
