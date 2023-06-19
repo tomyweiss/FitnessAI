@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@canvasjs/react-charts": "^1.0.0",
+    "@devexpress/dx-react-chart": "^4.0.4",
+    "@devexpress/dx-react-chart-material-ui": "^4.0.4",
+    "@devexpress/dx-react-core": "^4.0.4",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.11.16",
@@ -15,6 +19,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
     "axios": "^1.4.0",
+    "canvas": "^2.11.2",
     "fs": "0.0.1-security",
     "react": "^18.2.0",
     "react-app-rewired": "^2.2.1",
@@ -59,7 +64,7 @@
   },
   "devDependencies": {
     "@types/node": "^16.18.30",
-    "@types/react": "^18.2.11",
+    "@types/react": "^18.2.13",
     "@types/react-dom": "^18.2.4",
     "@types/react-router-dom": "^5.3.3",
     "babel-eslint": "^10.1.0",

@@ -10,6 +10,9 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import ReactPlayer from 'react-player'
 import Divider from '@mui/material/Divider';
+import { Animation } from '@devexpress/dx-react-chart';
+import { ArgumentAxis, ValueAxis, LineSeries, Chart } from '@devexpress/dx-react-chart-material-ui';
+import Paper from '@mui/material/Paper';
 import ClipLoader from "react-spinners/ClipLoader";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
@@ -51,10 +54,23 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
                         this.setState({
                             id: results._id.training_id,
                             CNN_result: results.CNN_result,
-                            sarima_result1: results.sarima_result1,
-                            sarima_result2: results.sarima_result2,
+                            sarima_forecast: results.sarima_forecast,
+                            sarima_history: results.sarima_history,
                             training_type_field: results.training_type_field,
                             finished: true
+                        });
+
+                        let graphResults:any = [];
+                        results.sarima_forecast.map((item:any, index:number) => {
+                            graphResults.push({arg1: index, val1: item})
+                        })
+
+                        results.sarima_history.map((item:any, index:number) => {
+                            graphResults.push({arg2: index + results.sarima_forecast.length, val2: item})
+                        })
+
+                        this.setState({
+                            graphResults: graphResults,
                         });
             
                         this.setTrainingType();
@@ -74,15 +90,15 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
                 {
                     this.state?.finished?
                     <div>
-                          <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                    <Grid xs={5} />
-                    <Grid xs={2} >
-                        <h1>
-                            Results Dashboard
-                        </h1>
-                    </Grid>
-                    <Grid xs={5} />
-                </Grid>
+                        <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                            <Grid xs={5} />
+                            <Grid xs={2} >
+                                <h1>
+                                    Results Dashboard
+                                </h1>
+                            </Grid>
+                            <Grid xs={5} />
+                        </Grid>
                     <Snackbar
                     open={false}
                     autoHideDuration={1000}
@@ -125,6 +141,45 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
                         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                             <Grid xs={4} />
                             <Grid xs={5} >
+                                <h2>Training Analysis</h2>
+                            </Grid>
+                           
+                            <Grid xs={3} />
+                        </Grid>
+                    </div>
+                    <div style={{marginTop:"10px"}}>
+                        <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                            <Grid xs={4} />
+                            <Grid xs={5} >
+                                <Paper>
+                                    <Chart
+                                    data={this.state? this.state.graphResults? this.state.graphResults: []: []}
+                                    >
+                                    <ArgumentAxis />
+                                    <ValueAxis />
+                                    <LineSeries
+                                        name="Training"
+                                        valueField="val1"
+                                        argumentField="arg1"
+                                    />
+                                    <LineSeries
+                                        name="Forcast"
+                                        valueField="val2"
+                                        argumentField="arg2"
+                                    />
+                                    <Animation />
+                                    </Chart>
+                                </Paper>
+                            </Grid>
+                            <Grid xs={3} />
+                        </Grid>
+                    </div>
+
+                    <Divider style={{marginTop:"30px"}}/>
+                    <div style={{marginTop:"10px"}}>
+                        <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                            <Grid xs={4} />
+                            <Grid xs={5} >
                                 <h2>What is the best way to perform the training?</h2>
                             </Grid>
                            
@@ -148,11 +203,8 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
                     </div>
                     </div>:
                     <div>
-
                         <Grid container>
-                            <Grid xs={5} >
-                               
-                            </Grid>
+                            <Grid xs={5} />
                             <Grid xs={4} >
                             <h3 style={{marginTop:"300px"}}> Analyzing results... </h3>
                             <div className="sweet-loading">
@@ -167,12 +219,8 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
                             </Grid>
                             <Grid xs={3} />
                         </Grid>
-                    
-                
-                   
-                        </div>
+                     </div>
                 }
-              
             </div>
             )
         } 

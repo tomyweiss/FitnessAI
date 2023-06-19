@@ -308,5 +308,5 @@ config = {
 
 if __name__ == "__main__":
     # app.run()
-    app.config.from_mapping(config)
+    # app.config.from_mapping(config)
     app.run(port=5000)
